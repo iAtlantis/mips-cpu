@@ -6,28 +6,39 @@
 module NPC
         (
             input [31:0] pc,            //本条指令的地址
-            input [25:0] immediate，    //立即数
+            input [15:0] imm16
+            input [25:0] imm26， //立即数
             input [1:0] npcop,          //计算方式
             output reg [31:0] npc       //下条指令的地址
         );
         
+    reg [31:0]imm16ex;
+
     always@(posedge clk)
         begin
-            if(npcop==2'b00)
-                begin
-                    //顺序地址
-                    //npc <- pc +1
-                end
-            else if(npcop==2'b01)
-                begin
-                    //计算B指令转移地址
-                    //npc <- pc + { sign_ext(imm16 )}
-                end
-            else if(npcop==2'b10)
-                begin
-                    //计算J类指令转移地址
-                    //npc <- { pc[31:28] , imm26 }
-                end
+            case(npcop)
+                2'b00:
+                    begin
+                        //顺序地址
+                        //npc <- pc +1
+                        npc = pc + 4;
+                    end
+                2'b01:
+                    begin
+                        //计算B指令转移地址
+                        //npc <- pc + { sign_ext(imm16 )}
+                        if(imm16[15]==0)		
+                            imm16ex={14'b00000000000000,imm16[15:0],2'b0};
+						else if(imm16[15]==1)	
+                            imm16ex={14'b11111111111111,imm16[15:0],2'b0};
+						NPC = PC + 4 + imm16ex;
+                    end
+                2'b10:
+                    begin
+                        //计算J类指令转移地址
+                        //npc <- { pc[31:28] , imm26 }
+                        npc = {pc[31:28],imm26,2'b0};
+                    end
         end
 
 endmodule

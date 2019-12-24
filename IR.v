@@ -6,20 +6,23 @@
 `timescale 1ns / 1ns
 module IR
         (
-            input [31:0] im_dout,       //指令输入
+            input [31:0] im_din,       //指令输入
             input irwr,                 //写使能信号
             input rst,                  //复位信号
             input clk,                  //时钟信号
-            output reg [31:0] instr     //指令输出
+            output reg [31:0] im_dout     //指令输出
         )；
 
 
         always@(posedge clk, negedge rst)
         begin
-            if(rst==1'b0)   //缓冲
-                instr = im_dout;
-            else            //复位
-                instr = 32'h00000000;
+            if(irwr == 1)           //写使能
+                begin
+                    if(rst == 1)    //缓冲
+                        im_dout = im_din;
+                    else            //复位
+                        im_dout = 32'h00000000;
+                end
         end
 
 

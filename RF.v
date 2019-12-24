@@ -16,5 +16,18 @@ module RF
             output reg [31:0] DataOut2, //rt寄存器数据输出端  
         )；
 
+        reg [31:0] regFile [31:0];      //寄存器定义    
+
+        //读寄存器数据
+        assign DataOut1 = (Reg1 == 0) ? 0 : regFile[Reg1];
+        assign DataOut2 = (Reg2 == 0) ? 0 : regFile[Reg2];
+        //时钟边沿触发
+        always@(negedge clk)
+            begin
+                if(RegWre == 1 && WriteReg != 0)
+                    begin
+                        regFile[WriteData] = WriteData;
+                    end
+            end
 
 endmodule

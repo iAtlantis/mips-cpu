@@ -6,17 +6,19 @@
 `timescale 1ns / 1ns
 module FLOPR
         (
-            input [31:0] d;         //输入数据
+            input [31:0] din;         //输入数据
             input rst;              //复位信号
             input clk;              //时钟信号
-            output reg [31:0] q;    //输出数据
+            output reg [31:0] dout;    //输出数据
         )
 
 
         always@(posedge clk,posedge rst)
             begin
-                if(rst==1'b0)
-                    q=d;
+                if(rst == 0)
+                    dout = din;
                 else
-                    q=32'h00000000;
+                    dout = 32'h00000000;
             end
+
+endmodule
