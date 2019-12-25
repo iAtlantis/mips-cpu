@@ -11,18 +11,20 @@ module PC(
 			output reg [31:0] pc	//输出下一条指令的地址
 		);
 		
+    parameter base_address = 32'h00003000;
 	initial
 		begin
-			pc <= 32'h00003000;		//PC初值为0x0000_3000
+			pc <= base_address;		//PC初值为0x0000_3000
 		end
 		
-	always@(posedge clk, posedge reset, negedge pcwr)//任何一个变动都可以触发
-		begin
-			if(pcwr==1'b1)          //1：允许NPC写入PC内部寄存器
-				begin
-					if(rst) pc <= 32'h00003000;//PC复位后初值为0x0000_3000
-					else pc <= npc;
-					//$display($time,,"(PC)NextPcAddr%b",pc);
-				end
-		end
+	always@(posedge clk, negedge pcwr, posedge rst)//任何一个变动都可以触发
+	begin
+        if (pcwr==1'b1)          //1：允许NPC写入PC内部寄存器
+        begin
+            if (rst==1'b1) 
+                pc <= base_address;//PC复位后初值为0x0000_3000
+			else if (clk==1'b1)
+                pc <= npc;
+        end
+	end
 endmodule

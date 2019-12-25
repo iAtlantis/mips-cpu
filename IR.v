@@ -1,7 +1,9 @@
 /*
     IR主要功能是完成对来自IM的指令的缓冲。
-    1	复位	if rst=1, instr0
-    2	缓冲	if rst=0, instrim_dout
+异步复位：rst=1 且 irwr=1，im_dout<-0
+
+同步缓冲：rst=0，clk 上升沿且 irwr=1，im_dout<-im_din
+
 */
 `timescale 1ns / 1ns
 module IR
@@ -14,17 +16,16 @@ module IR
         )；
 
 
-        always@(posedge clk, negedge rst)
+        always @ (posedge clk, posedge rst)
         begin
             if(irwr == 1)           //写使能
-                begin
-                    if(rst == 1)    //缓冲
-                        im_dout = im_din;
-                    else            //复位
-                        im_dout = 32'h00000000;
-                end
+            begin
+                if (rst == 1)    //缓冲
+                    if (clk == 1)
+                        im_dout <= im_din;
+                else            //复位
+                        im_dout <= 32'h00000000;
+            end
         end
-
-
 
 endmodule
