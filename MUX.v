@@ -13,7 +13,7 @@ module MUX_2
             input dout          //片选后的数据
         );
 
-        assign dout = s ? d1 : d0;
+        assign dout = s ? d0 : d1;
 
 endmodule
 
