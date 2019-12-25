@@ -10,10 +10,10 @@ module MUX_2
         (
             input d0,input d1,
             input s,            //片选信号
-            input dout；           //片选后的数据
+            input dout          //片选后的数据
         );
 
-        assign dout = s ? d0 : d1;
+        assign dout = s ? d1 : d0;
 
 endmodule
 
@@ -23,7 +23,7 @@ module MUX_4
             input d0,input d1,
             input d2,input d3,
             input [1:0] s,      //片选信号
-            input dout；           //片选后的数据
+            input dout          //片选后的数据
         );
 
         always @(s) begin
