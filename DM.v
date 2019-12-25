@@ -29,17 +29,20 @@ module DM
         //读写控制信号分离
         //assign dout[31:0]=(dmwr == 0) ? dmen[address]:8'bz;
 
-        always@(posedge clk,negedge dmwr)
+        always@(posedge clk, negedge dmwr)
         begin
-            if(dmwr==1'b0)
+            if (clk == 1'b1)
             begin
-                //输出地址所对应的数据, dout <- dmen[addr]
-                dout = dmen[address];
-            end
-            else
-            begin
-                //将待写数据写入对应地址， dmem[addr] <- din
-                dmem[address] = din;
+                if(dmwr==1'b0)
+                begin
+                    //输出地址所对应的数据, dout <- dmen[addr]
+                    dout = dmen[address];
+                end
+                else
+                begin
+                    //将待写数据写入对应地址， dmem[addr] <- din
+                    dmem[address] = din;
+                end
             end
         end
 
