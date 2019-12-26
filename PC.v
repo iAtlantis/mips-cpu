@@ -11,7 +11,7 @@ module PC(
 			output reg [31:0] pc	//输出下一条指令的地址
 		);
 		
-    parameter base_address = 32'h00003000;
+    parameter base_address = 32'h0000_3000;
 	initial
 		begin
 			pc <= base_address;		//PC初值为0x0000_3000

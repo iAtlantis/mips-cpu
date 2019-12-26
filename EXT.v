@@ -17,14 +17,14 @@ module EXT
         case(extop)
             2'b00:
                 begin
-                    Imm32 = {16'b0,Imm16}
+                    Imm32 = {16'b0,Imm16};
                 end
             2'b01:
                 begin
                     if(Imm16[15]==1)
-						Imm32 = {16'b1111_1111_1111_1111,EXTin[15:0]};
+						Imm32 = {16'b1111_1111_1111_1111,Imm16[15:0]};
 					else 
-                        Imm32 = {16'b0000_0000_0000_0000,EXTin[15:0]};
+                        Imm32 = {16'b0000_0000_0000_0000,Imm16[15:0]};
                 end
             2'b10:
                 begin

@@ -42,7 +42,7 @@ module Datapath
         wire [31:0]im_data;
 
         //IR
-        //wire [31:0]im_dout;
+        wire [31:0]im_dout;
 
         //Register 
         wire [31:0]WriteData;
@@ -57,7 +57,7 @@ module Datapath
         wire Zero;
 
         //DL
-        wire DLOut;
+        wire [31:0]DLOut;
 
 
         PC U_PC(npc[31:0],PCWr,clk,rst,pc[31:0]);
@@ -137,7 +137,7 @@ module Datapath
             Imm32[31:0]
         */
 
-        DL U_DL(DataOutC,rst,clk,DLOut);
+        DL U_DL(DataOutC,rst,clk,DLOut[31:0]);
         /*
         INPUT:
             [31:0] din <= DataOutC
@@ -159,7 +159,7 @@ module Datapath
             [31:0] dout => DMOut
         */
 
-        MUX_3 U_MUX3(pc[31:0], DLOut, DMOut, D_sel[1:0], WriteData);
+        MUX_3 U_MUX3(pc[31:0], DLOut[31:0], DMOut, D_sel[1:0], WriteData);
         /*
         INPUT:
             d0 <= pc[31:0]

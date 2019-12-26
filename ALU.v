@@ -21,10 +21,10 @@ module ALU//TODO
             input [31:0] B,     //操作数B
             input [3:0] aluop,  //运算操作数
             output reg zero,    //两操作数是否相等
-            output reg [31:0] C,    //运算结果
+            output reg [31:0] C    //运算结果
         );
 
-        initial overflow = 0;
+        integer overflow = 1'h0;
 
         always@(*)
         begin
@@ -37,7 +37,7 @@ module ALU//TODO
                     begin
                         C = A + B;
                         //溢出判断
-                        if ((A[31]==1'h0&&B[31]==1'h0&&C[31]==1'h1) || (A[31]==1'h1&&B[31]==1'h1&&C[31]==1'h0)))
+                        if ((A[31]==1'h0&&B[31]==1'h0&&C[31]==1'h1) || (A[31]==1'h1&&B[31]==1'h1&&C[31]==1'h0))
                             overflow=1'h1;
                         else 
                             overflow=1'h0;
