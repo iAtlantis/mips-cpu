@@ -54,7 +54,7 @@ module MUX_4
             input d0,input d1,
             input d2,input d3,
             input [1:0] s,      //片选信号
-            output dout;      //片选后的数据
+            output dout      //片选后的数据
         );
 
         always @(s) begin
