@@ -6,14 +6,14 @@ Datapath模块为该cpu的数据通路部分，内部由PC、NPC、DM、IM、EXT
 module Datapath
         (
             input [1:0]npcop,
-            input RegWre,
+            input RFWr,               //RF寄存器组写使能信号
             input [3:0]aluop,
-            input PCWr,
+            input PCWr,                 //PC写使能信号
             input sel,
-            input [1:0]x1,
+            input [1:0]D_sel,
             input wren,
             input IRWr,
-            input [1:0]x2,
+            input [1:0]R_sel,
             input [1:0]extop,
             input rst,
             input clk,
@@ -43,6 +43,22 @@ module Datapath
 
         //IR
         //wire [31:0]im_dout;
+
+        //Register 
+        wire [31:0]WriteData;
+        wire [31:0]ReadDataA;
+        wire [31:0]ReadDataB;
+
+        //EXT
+        wire [31:0]Imm32;
+
+        //ALU
+        wire DataOutC;
+        wire Zero;
+
+        //DL
+        wire DLOut;
+
 
         PC U_PC(npc[31:0],PCWr,clk,rst,pc[31:0]);
         /*
@@ -85,6 +101,33 @@ module Datapath
             im_dout
         */
 
+        RF U_Register(im_dout[25:21],im_dout[20:16],im_dout[15:11],clk,RFWr,WriteData,ReadDataA,ReadDataB);
+        /*
+        INPUT:
+            Reg1 (rs) <= im_dout[25:21]
+            Reg2 (rt) <= im_dout[20:16]
+            WriteReg (rd) <= im_dout[15:11]   //数据写入目的地址
+            clk
+            RFWr
+            WriteData
+        OUTPUT:
+            DataOut1 => ReadDataA(A操作数)
+            DataOut2 => ReadDataB(B操作数)
+        */
+
+        MUX_2 U_MUX2(ReadDataB,Imm32,DataOutB);
+
+        ALU U_ALU(ReadDataA, DataOutB, aluop[3:0], Zero, DataOutC);
+        /*
+        INPUT:
+            [31:0] A,     //操作数A
+            [31:0] B,     //操作数B
+            [3:0] aluop,  //运算操作数
+        OUTPUT:
+            zero,         //两操作数是否相等
+            [31:0] C,     //运算结果
+        */
+
         EXT U_EXT(im_dout[15:0],extop[1:0],Imm32[31:0]);
         /*
         INPUT:
@@ -94,6 +137,42 @@ module Datapath
             Imm32[31:0]
         */
 
+        DL U_DL(DataOutC,rst,clk,DLOut);
+        /*
+        INPUT:
+            [31:0] din <= DataOutC
+            rst
+            clk
+        OUTPUT:
+            [31:0] dout => DLOut
+        */
+
+        DM U_DM(clk,dmwr,wren,DLOut[9:0],DataOutB,DMOut);
+        /*
+        INPUT:
+            clk,              
+            dmwr,             
+            wren,             
+            [11:2] address <= DLOut[9:0]
+            [31:0] din <= DataOutB
+        OUTPUT:
+            [31:0] dout => DMOut
+        */
+
+        MUX_3 U_MUX3(pc[31:0], DLOut, DMOut, D_sel[1:0], WriteData);
+        /*
+        INPUT:
+            d0 <= pc[31:0]
+            d1 <= DLOut
+            d2 <= DMOut
+            [1:0]s <= [1:0]D_sel
+        OUTPUT:
+            dout
+        */
+
+
+
+        
         
 
 
