@@ -18,19 +18,19 @@ module Datapath
             input rst,
             input clk,
             
-            output [5:0]op,
-            output [5:0]funct,
+            output [5:0]op,             //im_dout[31:26]
+            output [5:0]funct,          //im_dout[5:0]
             output [31:0]IR,            //im_dout
-            output [4:0]Aaddress,
-            output [4:0]Baddress,
-            output [31:0]DMdata,
-            output [31:0]Adata,
-            output [31:0]Bdata,
-            output [4:0]Waddress,
-            output [31:0]regBdata,
-            output zero,
-            output [31:2]PCdata,         //pc
-            output [31:0]dmadd,
+            output [4:0]Aaddress,       //im_dout[25:21]
+            output [4:0]Baddress,       //im_dout[20:16]
+            output [31:0]DMdata,        //DMOut
+            output [31:0]Adata,         //ReadDataA
+            output [31:0]Bdata,         //DataOutB
+            output [4:0]Waddress,       //im_dout[15:11]
+            output [31:0]regBdata,      //ReadDataB
+            output zero,                //Zero
+            output [31:2]PCdata,        //pc
+            output [31:0]dmadd,         //DMOut
             output [31:0]IMdata         //im_data
         );
 
