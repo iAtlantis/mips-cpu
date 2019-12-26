@@ -18,6 +18,37 @@ module MUX_2
 endmodule
 
 
+module MUX_3
+        (
+            input d0,input d1,
+            input d2,
+            input [1:0] s,      //片选信号
+            output dout；       //片选后的数据
+        );
+
+        always @(s) begin
+            case(s)
+                2'b00:
+                begin
+                    assign dout = d0;
+                end
+                2'b01:
+                begin
+                    assign dout = d1;
+                end
+                2'b10:
+                begin
+                    assign dout = d2;
+                end
+                default:
+                    assign dout = 1'bz;
+            endcase
+            
+        end
+
+endmodule
+
+
 module MUX_4
         (
             input d0,input d1,
@@ -51,3 +82,4 @@ module MUX_4
         end
 
 endmodule
+
