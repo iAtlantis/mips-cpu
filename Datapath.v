@@ -2,6 +2,7 @@
 Datapath模块为该cpu的数据通路部分，内部由PC、NPC、DM、IM、EXT、ALU、IR等模块以及一些多路选择器和缓冲器组成
 */
 `timescale 1ns / 1ns
+`def _31 = 5'b11111
 
 module Datapath
         (
@@ -45,6 +46,7 @@ module Datapath
         wire [31:0]im_dout;
 
         //Register 
+        wire [5:0] _rd;
         wire [31:0]WriteData;
         wire [31:0]ReadDataA;
         wire [31:0]ReadDataB;
@@ -53,9 +55,12 @@ module Datapath
         wire [31:0]Imm32;
 
         //ALU
-        wire DataOutC;
+        wire [31:0]DataOutB;
+        wire [31:0]DataOutC;
         wire Zero;
 
+        //DM
+        wire [31:0]DMOut;
         //DL
         wire [31:0]DLOut;
 
@@ -107,7 +112,7 @@ module Datapath
             im_dout
         */
 
-        RF U_Register(im_dout[25:21],im_dout[20:16],im_dout[15:11],clk,RFWr,WriteData,ReadDataA,ReadDataB);
+        RF U_Register(im_dout[25:21],im_dout[20:16],_rd[5:0],clk,RFWr,WriteData[31:0],ReadDataA,ReadDataB);
         /*
         INPUT:
             Reg1 (rs) <= im_dout[25:21]
@@ -121,9 +126,9 @@ module Datapath
             DataOut2 => ReadDataB(B操作数)
         */
 
-        MUX_2 U_MUX2(ReadDataB,Imm32,DataOutB);
+        MUX_2 U_MUX2(ReadDataB[31:0],Imm32[31:0],DataOutB[31:0]);
 
-        ALU U_ALU(ReadDataA, DataOutB, aluop[3:0], Zero, DataOutC);
+        ALU U_ALU(ReadDataA[31:0], DataOutB[31:0], aluop[3:0], Zero, DataOutC[31:0]);
         /*
         INPUT:
             [31:0] A,     //操作数A
@@ -143,7 +148,7 @@ module Datapath
             Imm32[31:0]
         */
 
-        DL U_DL(DataOutC,rst,clk,DLOut[31:0]);
+        DL U_DL(DataOutC[31:0],rst,clk,DLOut[31:0]);
         /*
         INPUT:
             [31:0] din <= DataOutC
@@ -153,7 +158,7 @@ module Datapath
             [31:0] dout => DLOut
         */
 
-        DM U_DM(clk,dmwr,wren,DLOut[9:0],DataOutB,DMOut);
+        DM U_DM(clk,dmwr,wren,DLOut[9:0],DataOutB,DMOut[31:0]);
         /*
         INPUT:
             clk,              
@@ -165,7 +170,8 @@ module Datapath
             [31:0] dout => DMOut
         */
 
-        MUX_3 U_MUX3(pc[31:0], DLOut[31:0], DMOut, D_sel[1:0], WriteData);
+        //目的数据多路选择器 32位
+        MUX_3 U_MUX3_1(pc[31:0], DLOut[31:0], DMOut[31:0], D_sel[1:0], WriteData[31:0]);
         /*
         INPUT:
             d0 <= pc[31:0]
@@ -175,6 +181,8 @@ module Datapath
         OUTPUT:
             dout
         */
+        //目的寄存器多路选择器 5位
+        MUX_3 U_MUX3_2(_31, im_dout[20:16], im_dout[15:11], R_sel[1:0], _rd[5:0]);
 
 
 
