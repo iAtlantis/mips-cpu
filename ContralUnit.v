@@ -17,7 +17,7 @@ module ContralUnit
             input zero,                 //ALU输出信号 0:ALU两操作数不相等，1:ALU两操作数相等
 
             output reg B_sel,           //ALU第二操作数的片选信号 0:RT域对应的数据 1:16位立即数通过EXT模块扩张后的数据
-            output reg [1:0]RFin_sel,  //RF的写入数据的片选信号
+            output reg [1:0]D_sel,  //RF的写入数据的片选信号
             output reg RFWr,            //RF的写使能信号
             output reg DMWr,            //DM的写使能信号
             output reg [1:0]npcop,      //NPC的模式选择信号
@@ -25,7 +25,7 @@ module ContralUnit
             output reg [3:0]aluop,      //ALU的运算控制信号
             output reg PCWr,            //PC写使能信号 0:禁止写 1:允许写
             output reg IRWr,            //IR写使能信号 0:禁止写 1:允许写
-            output reg [1:0]RFout_sel   //RF的写回寄存器的地址片选信号
+            output reg [1:0]R_sel   //RF的写回寄存器的地址片选信号
         );
         
         //状态周期
@@ -84,7 +84,7 @@ module ContralUnit
 
         initial begin
             B_sel           =0;             //第二操作数
-            RFin_sel        =2'b00;         //片选信号0
+            D_sel        =2'b00;         //片选信号0
             RFWr            =0;             //寄存器写使能
             DMWr            =0;             //数据存储器写使能
             npcop           =2'b11;         //NPC顺序地址
@@ -92,7 +92,7 @@ module ContralUnit
             aluop           =4'b1111;       //加法运算
             PCWr            =0;             //PC写使能
             IRWr            =0;             //IR写使能
-            RFout_sel       =2'b00;         //片选信号0
+            R_sel       =2'b00;         //片选信号0
         end
 
         //当前状态转移
@@ -177,8 +177,8 @@ module ContralUnit
                     end
                 S4:
                     begin
-                        RFin_sel=2'b01;
-                        RFout_sel=2'b01;
+                        D_sel=2'b01;
+                        R_sel=2'b01;
                         PCWr=0;
                         IRWr=0;
                         DMWr=0;
@@ -227,12 +227,12 @@ module ContralUnit
                         PCWr=0;
                         IRWr=0;
                         DMWr=0;
-                        RFin_sel=2'b10;
+                        D_sel=2'b10;
                         case(op)
                             addu_op:
-                                RFout_sel=2'b00;
+                                R_sel=2'b00;
                             ori_op:
-                                RFout_sel=2'b01;
+                                R_sel=2'b01;
                         endcase
                         next_state=S0;
                     end
@@ -253,9 +253,9 @@ module ContralUnit
                         PCWr=1;
                         IRWr=0;
                         DMWr=0;
-                        RFin_sel=2'b00;
+                        D_sel=2'b00;
                         npcop=2'b10;
-                        RFout_sel=2'b10;
+                        R_sel=2'b10;
                         next_state=S0;
                     end
                 default:
