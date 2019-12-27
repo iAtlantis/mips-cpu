@@ -155,6 +155,24 @@ module mips
             output [31:0]dmadd,         //DMOut
             output [31:0]IMdata         //im_data
         */
+		  
+		  //连接测试输出端口
+					
+			always@(*)begin
+			OP = op;
+			funct = _funct;
+			IR = _IR;
+			Aaddress = _Aaddress;
+			Baddress = _Baddress;
+			DMdata = _DMdata;
+			Adata = _Adata;
+			Bdata = _Bdata;
+			Waddress = _Waddress;
+			regBdata = _regBdata;
+			PC = _PC;
+			dmadd = _dmadd;
+			IMdata = _IMdata;
+			end
 
         
 
