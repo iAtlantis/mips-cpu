@@ -2,7 +2,7 @@
 Datapath模块为该cpu的数据通路部分，内部由PC、NPC、DM、IM、EXT、ALU、IR等模块以及一些多路选择器和缓冲器组成
 */
 `timescale 1ns / 1ns
-`def _31 = 5'b11111
+//`def _31 = 5'b11111
 
 module Datapath
         (
@@ -30,7 +30,7 @@ module Datapath
             output [4:0]Waddress,       //im_dout[15:11]
             output [31:0]regBdata,      //ReadDataB
             output zero,                //Zero
-            output [31:2]PCdata,        //pc
+            output [31:0]PCdata,        //pc
             output [31:0]dmadd,         //DMOut
             output [31:0]IMdata         //im_data
         );
@@ -126,7 +126,7 @@ module Datapath
             DataOut2 => ReadDataB(B操作数)
         */
 
-        MUX_2 U_MUX2(ReadDataB[31:0],Imm32[31:0],DataOutB[31:0]);
+        MUX_2 U_MUX2(ReadDataB[31:0],Imm32[31:0],sel,DataOutB[31:0]);
 
         ALU U_ALU(ReadDataA[31:0], DataOutB[31:0], aluop[3:0], Zero, DataOutC[31:0]);
         /*
@@ -182,26 +182,24 @@ module Datapath
             dout
         */
         //目的寄存器多路选择器 5位
-        MUX_3 U_MUX3_2(_31, im_dout[20:16], im_dout[15:11], R_sel[1:0], _rd[5:0]);
+        MUX_3 U_MUX3_2(5'b11111, im_dout[20:16], im_dout[15:11], R_sel[1:0], _rd[5:0]);
 
 
 
-        always @(*) begin
-            op[5:0] = im_dout[31:26];
-            funct[5:0] = im_dout[5:0];
-            IR[31:0] = im_dout;
-            Aaddress[4:0] = im_dout[25:21];
-            Baddress[4:0] = im_dout[20:16];
-            DMdata[31:0] = DMOut[31:0];
-            Adata[31:0] = ReadDataA;
-            Bdata[31:0] = DataOutB;
-            Waddress[4:0] = _rd[5:0];
-            regBdata[31:0] = ReadDataB;
-            zero = Zero;
-            PCdata[31:0] = pc[31:0];
-            dmadd[31:0] = DMOut[31:0];
-            IMdata[31:0] = im_data[31:0];
-        end
+            assign op[5:0] = im_dout[31:26];
+            assign funct[5:0] = im_dout[5:0];
+            assign IR[31:0] = im_dout;
+            assign Aaddress[4:0] = im_dout[25:21];
+            assign Baddress[4:0] = im_dout[20:16];
+            assign DMdata[31:0] = DMOut[31:0];
+            assign Adata[31:0] = ReadDataA;
+            assign Bdata[31:0] = DataOutB;
+            assign Waddress[4:0] = _rd[5:0];
+            assign regBdata[31:0] = ReadDataB;
+            assign zero = Zero;
+            assign PCdata[31:0] = pc[31:0];
+            assign dmadd[31:0] = DMOut[31:0];
+            assign IMdata[31:0] = im_data[31:0];
         
 
 
