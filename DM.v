@@ -13,21 +13,21 @@ module DM
         (
             input clk,              //时钟信号
             input dmwr,             //读写控制信号,高电平写，低电平读
-            //input wren,             //读写操作的写使能端
+            input wren,             //读写操作的写使能端
             input [11:2] address,   //访问地址
             input [31:0] din,      //需要写回的数据
             output reg [31:0] dout     //读出的数据
         );
 
-        reg [31:0]dmen[1023:0];
+        reg [31:0]dmem[1023:0];
         integer i;
         initial begin
-            for(i=0;i<128;i++)
-                dmen[i]<=0;
+            for(i=0;i<128;i=i+1)
+                dmem[i]<=0;
         end
 
         //读写控制信号分离
-        //assign dout[31:0]=(dmwr == 0) ? dmen[address]:8'bz;
+        //assign dout[31:0]=(dmwr == 0) ? dmem[address]:8'bz;
 
         always@(posedge clk, negedge dmwr)
         begin
@@ -35,8 +35,8 @@ module DM
             begin
                 if(dmwr==1'b0)
                 begin
-                    //输出地址所对应的数据, dout <- dmen[addr]
-                    dout = dmen[address];
+                    //输出地址所对应的数据, dout <- dmem[addr]
+                    dout = dmem[address];
                 end
                 else
                 begin

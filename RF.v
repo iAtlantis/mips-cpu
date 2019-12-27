@@ -12,15 +12,23 @@ module RF
             input clk,                  //时钟信号  
             input RegWre,               //寄存器是否需要写功能
             input [31:0] WriteData,     //寄存器数据输入端
-            output reg [31:0] DataOut1, //rs寄存器数据输出端
-            output reg [31:0] DataOut2, //rt寄存器数据输出端  
-        )；
+            output [31:0] DataOut1, //rs寄存器数据输出端
+            output [31:0] DataOut2  //rt寄存器数据输出端  
+        );
 
         reg [31:0] regFile [31:0];      //寄存器定义    
 
         //读寄存器数据
-        assign DataOut1 = (Reg1 == 0) ? 0 : regFile[Reg1];
-        assign DataOut2 = (Reg2 == 0) ? 0 : regFile[Reg2];
+//        assign DataOut1 = (Reg1 == 0) ? 0 : regFile[Reg1];
+//        assign DataOut2 = (Reg2 == 0) ? 0 : regFile[Reg2];
+			assign DataOut1 = regFile[Reg1];
+			assign DataOut2 = regFile[Reg2];
+			
+			integer i;
+			initial begin
+				for(i=0;i<32;i=i+1)
+					regFile[i] <= 0;
+			end
         //时钟边沿触发
         always@(negedge clk)
             begin

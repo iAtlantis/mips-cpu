@@ -13,7 +13,7 @@ module IR
             input rst,                  //复位信号
             input clk,                  //时钟信号
             output reg [31:0] im_dout     //指令输出
-        )；
+        );
 
 
         always @ (posedge clk, posedge rst)

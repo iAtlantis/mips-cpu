@@ -10,47 +10,73 @@ rst	I	复位信号
 1	构建CPU数据通路	连接内部组成模块，构建数据通路。
 */
 `timescale 1ns / 1ns
-module MIPS
+module mips
         (
             input clk,          //时钟信号
-            input rst           //复位信号
+            input rst,           //复位信号
 
-            output reg [5:0]OP;
-            output reg [5:0]funct;
-            output reg [31:0]IR;
-            output reg [4:0]Aaddress;
-            output reg [4:0]Baddress;
-            output reg [31:0]DMdata;
-            output reg [31:0]Adata;
-            output reg [31:0]Bdata;
-            output reg [4:0]Waddress;
-            output reg [31:0]regBdata;
-            output reg [31:2]PC;
-            output reg [31:0]dmadd;
-            output reg [31:0]IMdata;
+            output reg [5:0]OP,
+            output reg [5:0]funct,
+            output reg [31:0]IR,
+            output reg [4:0]Aaddress,
+            output reg [4:0]Baddress,
+            output reg [31:0]DMdata,
+            output reg [31:0]Adata,
+            output reg [31:0]Bdata,
+            output reg [4:0]Waddress,
+            output reg [31:0]regBdata,
+            output reg [31:2]PC,
+            output reg [31:0]dmadd,
+            output reg [31:0]IMdata
         );
 
         //控制信号
         wire [5:0]op;
-        wire [5:0]funct;
+        wire [5:0]_funct;
         wire zero;
 
-        wire B_sel,           //ALU第二操作数的片选信号 0:RT域对应的数据 1:16位立即数通过EXT模块扩张后的数据
-        wire [1:0]RFin_sel,   //RF的写入数据的片选信号
-        wire RFWr,            //RF的写使能信号
-        wire DMWr,            //DM的写使能信号
-        wire [1:0]npcop,      //NPC的模式选择信号
-        wire [1:0]extop,      //EXT的模式选择信号
-        wire [3:0]aluop,      //ALU的运算控制信号
-        wire PCWr,            //PC写使能信号 0:禁止写 1:允许写
-        wire IRWr,            //IR写使能信号 0:禁止写 1:允许写
-        wire [1:0]RFout_sel   //RF的写回寄存器的地址片选信号
+        wire B_sel;           //ALU第二操作数的片选信号 0:RT域对应的数据 1:16位立即数通过EXT模块扩张后的数据
+        wire [1:0]RFin_sel;   //RF的写入数据的片选信号
+        wire RFWr;            //RF的写使能信号
+        wire DMWr;            //DM的写使能信号
+        wire [1:0]npcop;      //NPC的模式选择信号
+        wire [1:0]extop;      //EXT的模式选择信号
+        wire [3:0]aluop;      //ALU的运算控制信号
+        wire PCWr;            //PC写使能信号 0:禁止写 1:允许写
+        wire IRWr;            //IR写使能信号 0:禁止写 1:允许写
+        wire [1:0]RFout_sel;  //RF的写回寄存器的地址片选信号
 
         //Datapath Out Point
-
+			
+			wire [31:0]_IR;
+			wire [4:0]_Aaddress;
+			wire [4:0]_Baddress;
+			wire [31:0]_DMdata;
+			wire [31:0]_Adata;
+			wire [31:0]_Bdata;
+			wire [4:0]_Waddress;
+			wire [31:0]_regBdata;
+			wire [31:2]_PC;
+			wire [31:0]_dmadd;
+			wire [31:0]_IMdata;
         //ContralUnit Model
-        ContralUnit U_CU(clk,rst,op[5:0],funct[5:0],zero,
-                         B_sel,RFin_sel[1:0],RFWr,DMWr,npcop[1:0],extop[1:0],aluop[3:0],PCWr,IRWr,RFout_sel[1:0],);
+        ContralUnit U_CU(
+		  clk,
+		  rst,
+		  op[5:0],
+		  _funct[5:0],
+		  zero,
+        B_sel,
+		  RFin_sel[1:0],
+		  RFWr,
+		  DMWr,
+		  npcop[1:0],
+		  extop[1:0],
+		  aluop[3:0],
+		  PCWr,
+		  IRWr,
+		  RFout_sel[1:0]
+		  );
         /*
             input clk,                  //时钟信号
             input rst，                 //复位信号
@@ -71,11 +97,34 @@ module MIPS
         */
 
         //Datapath Model
-        Datapath U_DP(npcop[1:0],RFWr,aluop[3:0],PCWr,B_sel,RFin_sel[1:0],DMWr,IRWr,RFout_sel[1:0],extop[1:0],
-                      op[5:0],funct[5:0],
-                      IR[31:0],Aaddress[4:0],Baddress[4:0],DMdata[31:0],Adata[31:0],Bdata[31:0],Waddress[4:0],regBdata[31:0],
-                      zero,
-                      PC[31:2],dmadd[31:0],IMdata[31:0]);
+        Datapath U_DP(
+			  npcop[1:0],
+			  RFWr,
+			  aluop[3:0],
+			  PCWr,
+			  B_sel,
+			  RFin_sel[1:0],
+			  DMWr,
+			  IRWr,
+			  RFout_sel[1:0],
+			  extop[1:0],
+			  rst,
+			  clk,
+			  op[5:0],
+			  _funct[5:0],
+			  _IR[31:0],
+			  _Aaddress[4:0],
+			  _Baddress[4:0],
+			  _DMdata[31:0],
+			  _Adata[31:0],
+			  _Bdata[31:0],
+			  _Waddress[4:0],
+			  _regBdata[31:0],
+			  zero,
+			  _PC[31:2],
+			  _dmadd[31:0],
+			  _IMdata[31:0]
+		  );
 
         /*
             input [1:0]npcop,

@@ -9,8 +9,8 @@ module DL
             input [31:0] din,         //输入数据
             input rst,              //复位信号
             input clk,              //时钟信号
-            output reg [31:0] dout,    //输出数据
-        )
+            output reg [31:0] dout    //输出数据
+        );
 
 
         always@(posedge clk,posedge rst)
