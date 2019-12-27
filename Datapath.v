@@ -60,7 +60,13 @@ module Datapath
         wire [31:0]DLOut;
 
 
-        PC U_PC(npc[31:0],PCWr,clk,rst,pc[31:0]);
+        PC U_PC(
+		npc[31:0],
+		PCWr,
+		clk,
+		rst,
+		pc[31:0]
+		);
         /*
         INPUT:
             npc[31:0] <= NPC.npc[31:0]

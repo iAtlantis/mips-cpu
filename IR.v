@@ -16,16 +16,22 @@ module IR
         );
 
 
-        always @ (posedge clk, posedge rst)
+always @ (posedge clk)
         begin
-            if(irwr == 1)           //写使能
+            /*if(irwr)           //写使能
             begin
                 if (rst == 1)    //缓冲
                     if (clk == 1)
                         im_dout <= im_din;
                 else            //复位
                         im_dout <= 32'h00000000;
-            end
+            end*/
+      if(irwr)begin
+      if(!rst)
+        im_dout <= im_din;
+      else
+        im_dout <= 32'h000000000;
+      end
         end
 
 endmodule

@@ -17,13 +17,13 @@ module PC(
 			pc <= base_address;		//PC初值为0x0000_3000
 		end
 		
-	always@(posedge clk, negedge pcwr, posedge rst)//任何一个变动都可以触发
+	always@(posedge clk)//任何一个变动都可以触发
 	begin
-        if (pcwr==1'b1)          //1：允许NPC写入PC内部寄存器
+        if (pcwr)          //1：允许NPC写入PC内部寄存器
         begin
-            if (rst==1'b1) 
+            if (rst) 
                 pc <= base_address;//PC复位后初值为0x0000_3000
-			else if (clk==1'b1)
+			else if (clk)
                 pc <= npc;
         end
 	end

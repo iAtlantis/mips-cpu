@@ -15,7 +15,7 @@ module IMnoc
         reg [31:0] imem [1023:0];
         initial begin
             dout = 32'h00000000;
-            $readmemb("/Download/Computer/mips/test.txt",imem);//打开文件
+            //$readmemb("/Download/Computer/mips/test.txt",imem);//打开文件
         end
 
         always@(address or dmwr)

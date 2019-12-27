@@ -19,12 +19,9 @@ module DM
             output reg [31:0] dout     //读出的数据
         );
 
-        reg [31:0]dmem[1023:0];
+        reg [31:0]dmem[31:0];
         integer i;
-        initial begin
-            for(i=0;i<128;i=i+1)
-                dmem[i]<=0;
-        end
+
 
         //读写控制信号分离
         //assign dout[31:0]=(dmwr == 0) ? dmem[address]:8'bz;

@@ -13,7 +13,7 @@ module DL
         );
 
 
-        always@(posedge clk,posedge rst)
+        always@(posedge clk,negedge rst)
             begin
                 if(rst == 0)
                     dout = din;
