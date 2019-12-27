@@ -117,7 +117,7 @@ module Datapath
         INPUT:
             Reg1 (rs) <= im_dout[25:21]
             Reg2 (rt) <= im_dout[20:16]
-            WriteReg (rd) <= im_dout[15:11]   //数据写入目的地址
+            WriteReg (rd) <= _rd[5:0]   //数据写入目的地址
             clk
             RFWr
             WriteData
@@ -186,7 +186,22 @@ module Datapath
 
 
 
-        
+        always @(*) begin
+            op[5:0] = im_dout[31:26];
+            funct[5:0] = im_dout[5:0];
+            IR[31:0] = im_dout;
+            Aaddress[4:0] = im_dout[25:21];
+            Baddress[4:0] = im_dout[20:16];
+            DMdata[31:0] = DMOut[31:0];
+            Adata[31:0] = ReadDataA;
+            Bdata[31:0] = DataOutB;
+            Waddress[4:0] = _rd[5:0];
+            regBdata[31:0] = ReadDataB;
+            zero = Zero;
+            PCdata[31:0] = pc[31:0];
+            dmadd[31:0] = DMOut[31:0];
+            IMdata[31:0] = im_data[31:0];
+        end
         
 
 
