@@ -12,7 +12,7 @@ module Datapath
             input PCWr,                 //PC写使能信号
             input sel,
             input [1:0]D_sel,
-            input DMWr,
+            input wren,
             input IRWr,
             input [1:0]R_sel,
             input [1:0]extop,
@@ -82,7 +82,7 @@ module Datapath
             pc[31:0]
         */
 
-        NPC U_NPC(pc[31:0],im_dout[15:0],im_dout[25:0],npcop[1:0],npc[31:0]);
+        NPC U_NPC(npcop[1:0],pc[31:0],im_dout[25:0],npc[31:0]);
         /*
         INPUT:
             npcop[1:0]
@@ -92,11 +92,11 @@ module Datapath
             npc[31:0]
         */
 
-        IMnoc U_IMnoc(clk,pc[11:2],im_data[31:0]);
+        IMnoc U_IMnoc(pc[11:2],clk,im_data[31:0]);
         /*
         INPUT:
-		      clk
             address[11:2] <=  pc[11:2]
+            clk
         OUTPUT:
             im_din[31:0]
         */
@@ -158,12 +158,12 @@ module Datapath
             [31:0] dout => DLOut
         */
 
-        DM U_DM(clk,DMWr,DLOut[9:0],DataOutB,DMOut[31:0]);
+        DM U_DM(clk,dmwr,wren,DLOut[9:0],DataOutB,DMOut[31:0]);
         /*
         INPUT:
             clk,              
             dmwr,             
-            DMWr,             
+            wren,             
             [11:2] address <= DLOut[9:0]
             [31:0] din <= DataOutB
         OUTPUT:
@@ -182,7 +182,7 @@ module Datapath
             dout
         */
         //目的寄存器多路选择器 5位
-        MUX_3 U_MUX3_2(im_dout[20:16], im_dout[15:11], 5'b11111, R_sel[1:0], _rd[5:0]);
+        MUX_3 U_MUX3_2(5'b11111, im_dout[20:16], im_dout[15:11], R_sel[1:0], _rd[5:0]);
 
 
 

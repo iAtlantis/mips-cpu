@@ -94,8 +94,6 @@ module ContralUnit
             IRWr            =0;             //IR写使能
             R_sel       =2'b00;         //片选信号0
         end
-		  
-
 
         //当前状态转移
         always @(posedge clk) begin

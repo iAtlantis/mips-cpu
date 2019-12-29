@@ -16,7 +16,7 @@ module RF
             output [31:0] DataOut2  //rt寄存器数据输出端  
         );
 
-        reg [31:0] regFile [0:31];      //寄存器定义    
+        reg [31:0] regFile [31:0];      //寄存器定义    
 
         //读寄存器数据
 //        assign DataOut1 = (Reg1 == 0) ? 0 : regFile[Reg1];
@@ -27,15 +27,15 @@ module RF
 			integer i;
 			initial begin
 				for(i=0;i<32;i=i+1)
-					regFile[i] <= i;
+					regFile[i] <= 0;
 			end
         //时钟边沿触发
-        always@(posedge clk)
+        always@(negedge clk)
             begin
                 if(RegWre == 1 && WriteReg != 0)
                     begin
-                        regFile[WriteReg] = WriteData;
+                        regFile[WriteData] = WriteData;
                     end
             end
 
-endmodule 
+endmodule
