@@ -84,185 +84,197 @@ module ContralUnit
 
         initial begin
             B_sel           =0;             //第二操作数
-            D_sel        =2'b00;         //片选信号0
+            D_sel        	 =2'b00;         //片选信号0
             RFWr            =0;             //寄存器写使能
             DMWr            =0;             //数据存储器写使能
-            npcop           =2'b11;         //NPC顺序地址
-            extop           =2'b11;         //EXT零拓展
-            aluop           =4'b1111;       //加法运算
+            npcop           =2'bz;         //NPC顺序地址
+            extop           =2'bz;         //EXT零拓展
+            aluop           =4'bz;       //加法运算
             PCWr            =0;             //PC写使能
             IRWr            =0;             //IR写使能
-            R_sel       =2'b00;         //片选信号0
-        end
+            R_sel       	 =2'b00;         //片选信号0
+				state = S0;
+				next_state = S0;
+		  end
 		  
 
 
         //当前状态转移
-        always @(posedge clk) begin
-            state <= next_state;
-        end
 
         //下一状态转移
-        always@(state or op or funct)
+        always@(posedge clk , posedge rst)
         begin
-            case(state)
+				state <= next_state;
+            if(rst)
+				state <= S0;
+				else
+				begin
+				case(state)
                 S0:
                     begin
-                        PCWr=1;
-                        IRWr=1;
-                        RFWr=0;
-                        DMWr=0;
-                        npcop=2'b00;
-                        next_state=S1;
+                        PCWr<=1;
+                        IRWr<=1;
+                        RFWr<=0;
+								DMWr<=0;
+                        npcop<=2'b00;
+								extop<=2'bz;
+								aluop<=4'bz;
+                        next_state<=S1;
                     end
                 S1:
                     begin
-                        PCWr=0;
-                        IRWr=0;
-                        RFWr=0;
-                        DMWr=0;
+                        PCWr<=0;
+                        IRWr<=0;
+                        RFWr<=0;
+                        DMWr<=0;
                         case(op)
                             addu_op:
-                                next_state=S6;
+                                next_state<=S6;
                             ori_op:
                             begin
-                                extop=2'b00;
-                                next_state=S6;
+                                extop<=2'b00;
+                                next_state<=S6;
                             end
                             lw_op:
                             begin
-                                extop=2'b01;
-                                next_state=S2;
+                                extop<=2'b01;
+                                next_state<=S2;
                             end
                             sw_op:
                             begin
-                                extop=2'b01;
-                                next_state=S2;
+                                extop<=2'b01;
+                                next_state<=S2;
                             end
                             beq_op:
-                                next_state=S8;
-                            jal_op:
-                                next_state=S9;
+									 begin
+										B_sel<=0;
+                              next_state<=S8;
+                            end
+									 jal_op:
+                                next_state<=S9;
                             default:
-                                next_state=S0;
+                                next_state<=S0;
                         endcase
                     end
                 S2:
                     begin
-                        B_sel=1;
-                        RFWr=0;
-                        aluop=4'b0101;
-                        PCWr=0;
-                        IRWr=0;
-                        DMWr=0;
+                        B_sel<=1;
+                        RFWr<=0;
+                        aluop<=4'b0101;
+                        PCWr<=0;
+                        IRWr<=0;
+                        DMWr<=0;
                         case(op)
                         lw_op:
-                            next_state=S3;
+                            next_state<=S3;
                         sw_op:
-                            next_state=S5;
+                            next_state<=S5;
                         default:
-                            next_state=S0;
+                            next_state<=S0;
 								endcase
                     end
                 S3:
                     begin
-                        RFWr=0;
-                        PCWr=0;
-                        IRWr=0;
-                        DMWr=0;
+                        RFWr<=0;
+                        PCWr<=0;
+                        IRWr<=0;
+                        DMWr<=0;
                         case(op)
                             lw_op:
-                                next_state=S4;
+                                next_state<=S4;
                             default:
-                                next_state=S0;
+                                next_state<=S0;
 								endcase
                     end
                 S4:
                     begin
-                        D_sel=2'b01;
-                        R_sel=2'b01;
-                        PCWr=0;
-                        IRWr=0;
-                        DMWr=0;
-                        RFWr=1;
-                        next_state=S0;
+                        D_sel<=2'b01;
+                        R_sel<=2'b00;
+                        PCWr<=0;
+                        IRWr<=0;
+                        DMWr<=0;
+                        RFWr<=1;
+                        next_state<=S0;
                     end
                 S5:
                     begin
-                        RFWr=0;
-                        PCWr=0;
-                        IRWr=0;
-                        DMWr=1;
-                        next_state=S0;
+                        RFWr<=0;
+                        PCWr<=0;
+                        IRWr<=0;
+                        DMWr<=1;
+                        next_state<=S0;
                     end
                 S6:
                     begin
-                        RFWr=0;
-                        PCWr=0;
-                        IRWr=0;
-                        DMWr=0;
+                        RFWr<=0;
+                        PCWr<=0;
+                        IRWr<=0;
+                        DMWr<=0;
                         case(op)
                             addu_op:
                             begin
-                                B_sel=0;
+                                B_sel<=0;
                                 case(funct)
                                     addu_func:
-                                        aluop=_add;
+                                        aluop<=_add;
                                     subu_func:
-                                        aluop=_sub;
+                                        aluop<=_sub;
                                 endcase
-                                next_state=S7;
+                                next_state<=S7;
                             end
                             ori_op:
                             begin
-                                B_sel=1;
-                                aluop=4'b0001;
-                                next_state=S7;
+                                B_sel<=1;
+                                aluop<=4'b0010;
+                                next_state<=S7;
                             end
                             default:
-                                next_state=S0;
+                                next_state<=S0;
                         endcase
                     end
                 S7:
                     begin
-                        RFWr=1;
-                        PCWr=0;
-                        IRWr=0;
-                        DMWr=0;
-                        D_sel=2'b10;
+                        RFWr<=1;
+                        PCWr<=0;
+                        IRWr<=0;
+                        DMWr<=0;
+                        D_sel<=2'b00;
+								//R_sel<=2'b10;
                         case(op)
                             addu_op:
-                                R_sel=2'b00;
+                                R_sel<=2'b01;
                             ori_op:
-                                R_sel=2'b01;
+                                R_sel<=2'b00;
                         endcase
-                        next_state=S0;
+                        next_state<=S0;
                     end
                 S8:
                     begin
-                        RFWr=0;
-                        IRWr=0;
-                        DMWr=0;
-                        PCWr=zero;
-                        B_sel=0;
-                        npcop=2'b01;
-                        aluop=4'b0110;
-                        next_state=S0;
+                        RFWr<=0;
+                        IRWr<=0;
+                        DMWr<=0;
+//                        PCWr<=zero;
+								PCWr<=!zero;
+                        B_sel<=0;
+                        npcop<=2'b01;
+                        aluop<=4'b0110;
+                        next_state<=S0;
                     end
                 S9:
                     begin
-                        RFWr=1;
-                        PCWr=1;
-                        IRWr=0;
-                        DMWr=0;
-                        D_sel=2'b00;
-                        npcop=2'b10;
-                        R_sel=2'b10;
-                        next_state=S0;
+                        RFWr<=1;
+                        PCWr<=0;
+                        IRWr<=0;
+                        DMWr<=0;
+                        D_sel<=2'b10;
+                        npcop<=2'b10;
+                        R_sel<=2'b10;
+                        next_state<=S0;
                     end
                 default:
-                    next_state=S0;
+                    next_state<=S0;
             endcase
+				end
         end
 
         

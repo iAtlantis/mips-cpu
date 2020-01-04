@@ -6,6 +6,7 @@ Datapath模块为该cpu的数据通路部分，内部由PC、NPC、DM、IM、EXT
 
 module Datapath
         (
+				input [4:0]test_in,
             input [1:0]npcop,
             input RFWr,               //RF寄存器组写使能信号
             input [3:0]aluop,
@@ -32,7 +33,10 @@ module Datapath
             output zero,                //Zero
             output [31:0]PCdata,        //pc
             output [31:0]dmadd,         //DMOut
-            output [31:0]IMdata         //im_data
+            output [31:0]IMdata,         //im_data
+				
+				output [31:0]test_out,
+				output [31:0]_WriteData
         );
 
         //PC and NPC
@@ -63,6 +67,9 @@ module Datapath
         wire [31:0]DMOut;
         //DL
         wire [31:0]DLOut;
+		  
+		  wire [4:0]testin;
+		  wire [31:0]testout;
 
 
         PC U_PC(
@@ -92,10 +99,9 @@ module Datapath
             npc[31:0]
         */
 
-        IMnoc U_IMnoc(clk,pc[11:2],im_data[31:0]);
+        IMnoc U_IMnoc(pc[9:0],im_data[31:0]);
         /*
         INPUT:
-		      clk
             address[11:2] <=  pc[11:2]
         OUTPUT:
             im_din[31:0]
@@ -112,7 +118,10 @@ module Datapath
             im_dout
         */
 
-        RF U_Register(im_dout[25:21],im_dout[20:16],_rd[5:0],clk,RFWr,WriteData[31:0],ReadDataA,ReadDataB);
+        RF U_Register(test_in[4:0],im_dout[25:21],im_dout[20:16],_rd[5:0],clk,RFWr,WriteData[31:0],ReadDataA,ReadDataB,test_out[31:0]);
+		  //        RF U_Register(im_dout[25:21],im_dout[20:16],_rd[5:0],clk,RFWr,WriteData[31:0],ReadDataA,ReadDataB);
+
+
         /*
         INPUT:
             Reg1 (rs) <= im_dout[25:21]
@@ -148,7 +157,7 @@ module Datapath
             Imm32[31:0]
         */
 
-        DL U_DL(DataOutC[31:0],rst,clk,DLOut[31:0]);
+        DL U_DL(DMOut[31:0],rst,clk,DLOut[31:0]);
         /*
         INPUT:
             [31:0] din <= DataOutC
@@ -158,7 +167,7 @@ module Datapath
             [31:0] dout => DLOut
         */
 
-        DM U_DM(clk,DMWr,DLOut[9:0],DataOutB,DMOut[31:0]);
+        DM U_DM(clk,DMWr,DataOutC[9:0],ReadDataB[31:0],DMOut[31:0]);
         /*
         INPUT:
             clk,              
@@ -170,8 +179,8 @@ module Datapath
             [31:0] dout => DMOut
         */
 
-        //目的数据多路选择器 32位
-        MUX_3 U_MUX3_1(pc[31:0], DLOut[31:0], DMOut[31:0], D_sel[1:0], WriteData[31:0]);
+        //目的数据多路选择器 32位 D_sel
+        MUX_3_1 U_MUX3_1(DataOutC[31:0], DLOut[31:0], npc[31:0], D_sel[1:0], WriteData[31:0]);
         /*
         INPUT:
             d0 <= pc[31:0]
@@ -181,8 +190,8 @@ module Datapath
         OUTPUT:
             dout
         */
-        //目的寄存器多路选择器 5位
-        MUX_3 U_MUX3_2(im_dout[20:16], im_dout[15:11], 5'b11111, R_sel[1:0], _rd[5:0]);
+        //目的寄存器多路选择器 5位 R_sel
+        MUX_3_2 U_MUX3_2(im_dout[20:16], im_dout[15:11], 5'b11111, R_sel[1:0], _rd[5:0]);
 
 
 
@@ -191,15 +200,20 @@ module Datapath
             assign IR[31:0] = im_dout;
             assign Aaddress[4:0] = im_dout[25:21];
             assign Baddress[4:0] = im_dout[20:16];
-            assign DMdata[31:0] = DMOut[31:0];
+            //assign DMdata[31:0] = DMOut[31:0];
+				assign DMdata[31:0] = DataOutC[31:0];
+
             assign Adata[31:0] = ReadDataA;
             assign Bdata[31:0] = DataOutB;
             assign Waddress[4:0] = _rd[5:0];
+				
             assign regBdata[31:0] = ReadDataB;
             assign zero = Zero;
             assign PCdata[31:0] = pc[31:0];
             assign dmadd[31:0] = DMOut[31:0];
             assign IMdata[31:0] = im_data[31:0];
+				
+				assign _WriteData[31:0] = WriteData[31:0];
         
 
 

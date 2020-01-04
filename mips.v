@@ -14,6 +14,7 @@ module mips
         (
             input clk,          //时钟信号
             input rst,           //复位信号
+				input [4:0]num,		//要查看的寄存器序号
 
             output reg [5:0]OP,
             output reg [5:0]funct,
@@ -25,9 +26,15 @@ module mips
             output reg [31:0]Bdata,
             output reg [4:0]Waddress,
             output reg [31:0]regBdata,
-            output reg [31:2]PC,
+            output reg [31:0]PC,
             output reg [31:0]dmadd,
-            output reg [31:0]IMdata
+            output reg [31:0]IMdata,
+				
+				//test
+				output reg [3:0]ALUop,
+				output reg _IRWr,
+				output reg [31:0]regdata,
+				output reg [31:0]WriteData
         );
 
         //控制信号
@@ -56,9 +63,12 @@ module mips
 			wire [31:0]_Bdata;
 			wire [4:0]_Waddress;
 			wire [31:0]_regBdata;
-			wire [31:2]_PC;
+			wire [31:0]_PC;
 			wire [31:0]_dmadd;
 			wire [31:0]_IMdata;
+			
+			wire [31:0]_regdata;
+			wire [31:0]_WriteData;
         //ContralUnit Model
         ContralUnit U_CU(
 		  clk,
@@ -98,6 +108,7 @@ module mips
 
         //Datapath Model
         Datapath U_DP(
+				num[4:0],
 			  npcop[1:0],
 			  RFWr,
 			  aluop[3:0],
@@ -121,9 +132,11 @@ module mips
 			  _Waddress[4:0],
 			  _regBdata[31:0],
 			  zero,
-			  _PC[31:2],
+			  _PC[31:0],
 			  _dmadd[31:0],
-			  _IMdata[31:0]
+			  _IMdata[31:0],
+			  _regdata[31:0],
+			  _WriteData[31:0]
 		  );
 
         /*
@@ -172,6 +185,11 @@ module mips
 			PC = _PC;
 			dmadd = _dmadd;
 			IMdata = _IMdata;
+			//test
+			ALUop = aluop;
+			_IRWr = IRWr;
+			regdata = _regdata;
+			WriteData = _WriteData;
 			end
 
         

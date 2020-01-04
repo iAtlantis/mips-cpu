@@ -20,13 +20,13 @@ module ALU//TODO
             input [31:0] A,     //操作数A
             input [31:0] B,     //操作数B
             input [3:0] aluop,  //运算操作数
-            output reg zero,    //两操作数是否相等
+            output zero,    //两操作数是否相等
             output reg [31:0] C    //运算结果
         );
 
         integer overflow = 1'h0;
 
-        always@(*)
+        always@(aluop)
         begin
             case(aluop)
                 4'b0000://  直接赋值  C A
@@ -82,18 +82,16 @@ module ALU//TODO
                     begin
                         C = 32'h00000000;
                     end
-                4'b1010://	或非(扩展)	Zero   (A<B) ?  1  :  0
-                    begin
-                        zero = (A < B) ? 1'h1 : 1'h0;
-                    end
+//                4'b1010://	或非(扩展)	Zero   (A<B) ?  1  :  0
+//                    begin
+//                        zero = (A < B) ? 1'h1 : 1'h0;
+//                    end
                 default:
                     C = 32'h00000000;
             endcase
-            if(A==B) 
-                zero=1;
-			else 
-                zero=0;
         end
+		  
+		  assign zero = (A==B) ? 1 : 0;
 
 
 endmodule

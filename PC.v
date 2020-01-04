@@ -5,8 +5,8 @@
 `timescale 1ns / 1ns
 module PC(	
 			input [31:0] npc,		//NextPC计算单元
-            input pcwr,             //PC写使能信号
-			input clk,				//时钟信号
+         input pcwr,             //PC写使能信号
+			input clk,				//时钟信号; now EMPTY WIRE
 			input rst,			    //复位信号
 			output reg [31:0] pc	//输出下一条指令的地址
 		);
@@ -14,17 +14,26 @@ module PC(
     parameter base_address = 32'h0000_3000;
 	initial
 		begin
-			pc <= base_address;		//PC初值为0x0000_3000
+			pc <= base_address-1;		//PC初值为0x0000_3000
 		end
 		
-	always@(posedge clk)//任何一个变动都可以触发
+//	always@(posedge clk)
+//	begin
+//        if (pcwr)          //1：允许NPC写入PC内部寄存器
+//        begin
+//            if (rst) 
+//                pc <= base_address;//PC复位后初值为0x0000_3000
+//				else if (clk)
+//                pc <= npc;
+//        end
+//	end
+
+	always@(posedge pcwr)
 	begin
-        if (pcwr)          //1：允许NPC写入PC内部寄存器
-        begin
             if (rst) 
                 pc <= base_address;//PC复位后初值为0x0000_3000
-			else if (clk)
+				else
                 pc <= npc;
-        end
 	end
+	
 endmodule

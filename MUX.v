@@ -15,19 +15,53 @@ module MUX_2
         );
 
         always @(s)begin
-				dout = s ? d1 : d0;
+				if(s)
+					dout = d1;
+				else
+					dout = d0;
 		  end
 
 endmodule
 
 
-module MUX_3
+module MUX_3_1
         (
-            input d0,
-				input d1,
-            input d2,
+            input [31:0]d0,
+				input [31:0]d1,
+            input [31:0]d2,
             input [1:0] s,      			//片选信号
-            output reg dout       //片选后的数据
+            output reg [31:0]dout       //片选后的数据
+        );
+
+        always @(s) begin
+            case(s)
+                2'b00:
+                begin
+                    dout = d0;
+                end
+                2'b01:
+                begin
+                    dout = d1;
+                end
+                2'b10:
+                begin
+                    dout = d2;
+                end
+                default:
+                    dout = 1'bz;
+            endcase
+            
+        end
+
+endmodule
+
+module MUX_3_2
+        (
+            input [4:0]d0,
+				input [4:0]d1,
+            input [4:0]d2,
+            input [1:0] s,      			//片选信号
+            output reg [4:0]dout       //片选后的数据
         );
 
         always @(s) begin
